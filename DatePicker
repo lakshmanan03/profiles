@@ -1,0 +1,42 @@
+import React, { useState } from 'react';
+
+const DatePicker = () => {
+  const [selectedDate, setSelectedDate] = useState(null);
+
+  const handleDateChange = (event) => {
+    const inputDate = event.target.value;
+    const [year, day] = inputDate.split('-');
+    const date = new Date(year, 0); // Initialize with the first day of the year
+    date.setDate(parseInt(day)); // Set day of the year
+    setSelectedDate(date);
+  };
+
+  return (
+    <div style={{ position: 'relative' }}>
+      <input
+        type="text"
+        onChange={handleDateChange}
+        placeholder="YYYY-DDD"
+        style={{ padding: '5px' }}
+      />
+      {selectedDate && (
+        <div
+          style={{
+            position: 'absolute',
+            top: '100%',
+            left: 0,
+            backgroundColor: '#fff',
+            border: '1px solid #ccc',
+            borderRadius: '5px',
+            padding: '5px',
+            zIndex: 1,
+          }}
+        >
+          Selected Date: {selectedDate.toDateString()}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default DatePicker;
