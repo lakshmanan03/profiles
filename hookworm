@@ -123,5 +123,21 @@ function MyForm() {
     </form>
   );
 }
-
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Controller
+        name="date"
+        control={control}
+        render={({ field }) => (
+          <DatePicker
+            {...field}
+            value={selectedDate}
+            onChange={(date) => {
+              setValue("date", date, { shouldValidate: true });
+            }}
+            renderInput={(params) => <TextField {...params} label="Select Date" variant="standard" />}
+          />
+        )}
+      />
+      <Button type="submit" variant="contained">Submit</Button>
+    </form>
 export default MyForm;
