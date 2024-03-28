@@ -28,3 +28,13 @@ function CustomDatePicker({ name, label, defaultValue, rules, ...rest }) {
 }
 
 export default CustomDatePicker;
+<CustomDatePicker
+        name="date"
+        label="Select Date"
+        defaultValue={null}
+        control={control}
+        rules={{ required: 'Date is required' }}
+        fullWidth
+        // Additional props if needed
+      />
+      {errors.date && <span>{errors.date.message}</span>}
