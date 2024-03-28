@@ -192,3 +192,54 @@ const Form = () => {
 export default Form;
 
 export default MyForm;
+
+
+----
+
+import React from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
+import { Button } from '@mui/material';
+
+const MyComponent = () => {
+  const { control, handleSubmit } = useForm();
+
+  const onSubmit = (data) => {
+    console.log(data);
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Controller
+        name="selectedOptions"
+        control={control}
+        defaultValue={[]}
+        render={({ field }) => (
+          <Autocomplete
+            multiple
+            id="tags-outlined"
+            options={options}
+            getOptionLabel={(option) => option}
+            value={field.value}
+            onChange={(_, value) => field.onChange(value.slice(0, 30))}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                variant="outlined"
+                label="Select Options"
+                placeholder="Select Options"
+              />
+            )}
+            limitTags={30} // Limit the displayed tags to 30
+          />
+        )}
+      />
+      <Button type="submit" variant="contained">Submit</Button>
+    </form>
+  );
+};
+
+const options = ['Option 1', 'Option 2', 'Option 3', 'Option 4', 'Option 5', /* add more options here */];
+
+export default MyComponent;
