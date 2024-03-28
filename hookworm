@@ -140,4 +140,55 @@ function MyForm() {
       />
       <Button type="submit" variant="contained">Submit</Button>
     </form>
+
+import React from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { TextField, Button } from '@mui/material';
+
+const Form = () => {
+  const {
+    control,
+    handleSubmit,
+    formState: { errors }
+  } = useForm();
+
+  const onSubmit = (data) => {
+    console.log(data);
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Controller
+        name="numberField"
+        control={control}
+        defaultValue=""
+        rules={{
+          required: "Field is required",
+          pattern: {
+            value: /^[1-9]\d*$/,
+            message: "Please enter a valid number greater than zero"
+          }
+        }}
+        render={({ field }) => (
+          <TextField
+            {...field}
+            label="Number Field"
+            variant="outlined"
+            fullWidth
+            error={!!errors.numberField}
+            helperText={errors.numberField && errors.numberField.message}
+            inputProps={{
+              maxLength: 10, // Limit maximum input length
+              pattern: "[0-9]*" // Allow only numbers
+            }}
+          />
+        )}
+      />
+      <Button type="submit" variant="contained">Submit</Button>
+    </form>
+  );
+};
+
+export default Form;
+
 export default MyForm;
