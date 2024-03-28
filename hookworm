@@ -243,3 +243,59 @@ const MyComponent = () => {
 const options = ['Option 1', 'Option 2', 'Option 3', 'Option 4', 'Option 5', /* add more options here */];
 
 export default MyComponent;
+
+
+''' from tiem to time
+
+
+import React from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { LocalizationProvider } from '@mui/lab';
+import AdapterDayjs from '@mui/lab/AdapterDayjs';
+import TimeField from '@mui/x-data-pickers/TimeField';
+import { Button } from '@mui/material';
+
+const MyComponent = () => {
+  const { control, handleSubmit } = useForm();
+
+  const onSubmit = (data) => {
+    console.log(data);
+  };
+
+  return (
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Controller
+          name="fromTime"
+          control={control}
+          defaultValue={null}
+          render={({ field }) => (
+            <TimeField
+              {...field}
+              label="From Time"
+              value={field.value}
+              onChange={(newValue) => field.onChange(newValue)}
+            />
+          )}
+        />
+        <Controller
+          name="toTime"
+          control={control}
+          defaultValue={null}
+          render={({ field }) => (
+            <TimeField
+              {...field}
+              label="To Time"
+              value={field.value}
+              onChange={(newValue) => field.onChange(newValue)}
+            />
+          )}
+        />
+        <Button type="submit" variant="contained">Submit</Button>
+      </form>
+    </LocalizationProvider>
+  );
+};
+
+export default MyComponent;
+
