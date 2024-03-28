@@ -299,3 +299,73 @@ const MyComponent = () => {
 
 export default MyComponent;
 
+import React from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { LocalizationProvider } from '@mui/lab';
+import AdapterDayjs from '@mui/lab/AdapterDayjs';
+import { DatePicker } from '@mui/lab';
+import { TextField, Button } from '@mui/material';
+
+const MyComponent = () => {
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    watch
+  } = useForm();
+
+  const fromDateValue = watch('fromDate');
+  const toDateValue = watch('toDate');
+
+  const onSubmit = (data) => {
+    console.log(data);
+  };
+
+  return (
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Controller
+          name="fromDate"
+          control={control}
+          defaultValue={null}
+          rules={{
+            required: toDateValue ? 'From Date is required' : false
+          }}
+          render={({ field }) => (
+            <DatePicker
+              {...field}
+              label="From Date"
+              value={field.value}
+              onChange={(newValue) => field.onChange(newValue)}
+              renderInput={(params) => <TextField {...params} />}
+              error={!!errors.fromDate}
+              helperText={errors.fromDate && errors.fromDate.message}
+            />
+          )}
+        />
+        <Controller
+          name="toDate"
+          control={control}
+          defaultValue={null}
+          rules={{
+            required: fromDateValue ? 'To Date is required' : false
+          }}
+          render={({ field }) => (
+            <DatePicker
+              {...field}
+              label="To Date"
+              value={field.value}
+              onChange={(newValue) => field.onChange(newValue)}
+              renderInput={(params) => <TextField {...params} />}
+              error={!!errors.toDate}
+              helperText={errors.toDate && errors.toDate.message}
+            />
+          )}
+        />
+        <Button type="submit" variant="contained">Submit</Button>
+      </form>
+    </LocalizationProvider>
+  );
+};
+
+export default MyComponent;
