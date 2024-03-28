@@ -1,38 +1,29 @@
 import React from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { DatePicker } from '@mui/lab';
-import { TextField, Button } from '@mui/material';
+import { DatePicker } from 'x-date-pickers';
+import { FormControl, FormHelperText } from '@mui/material';
+import { useFormContext, Controller } from 'react-hook-form';
 
-function App() {
-  const { handleSubmit, control } = useForm();
-
-  const onSubmit = (data) => {
-    console.log(data);
-  };
+function CustomDatePicker({ name, label, defaultValue, ...rest }) {
+  const { control, formState: { errors } } = useFormContext();
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <FormControl error={!!errors[name]} fullWidth>
       <Controller
-        name="date"
+        name={name}
         control={control}
-        defaultValue={null}
-        rules={{ required: true }}
-        render={({ field: { onChange, value }, fieldState: { error } }) => (
+        defaultValue={defaultValue}
+        render={({ field }) => (
           <DatePicker
-            label="Date"
-            value={value}
-            onChange={onChange}
-            renderInput={(params) => (
-              <TextField {...params} fullWidth error={!!error} helperText={error ? error.message : null} />
-            )}
+            {...field}
+            label={label}
+            onChange={(date) => field.onChange(date)}
+            {...rest}
           />
         )}
       />
-      <Button type="submit" variant="contained" sx={{ mt: 2 }}>
-        Submit
-      </Button>
-    </form>
+      {errors[name] && <FormHelperText>{errors[name].message}</FormHelperText>}
+    </FormControl>
   );
 }
 
-export default App;
+export default CustomDatePicker;
