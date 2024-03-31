@@ -1,50 +1,87 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { TimePicker } from '@mui/lab';
+import { TextField, Button } from '@mui/material';
 
-const DatePickerSelect = () => {
-  const [selectedYear, setSelectedYear] = useState('');
-  const [selectedMonth, setSelectedMonth] = useState('');
-  const [selectedDay, setSelectedDay] = useState('');
+function MyComponent() {
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    watch
+  } = useForm();
 
-  const handleYearChange = (event) => {
-    setSelectedYear(event.target.value);
+  const onSubmit = (data) => {
+    console.log(data); // You can further process the valid time data
   };
 
-  const handleMonthChange = (event) => {
-    setSelectedMonth(event.target.value);
-  };
-
-  const handleDayChange = (event) => {
-    setSelectedDay(event.target.value);
-  };
+  const fromTime = watch('fromTime');
+  const toTime = watch('toTime');
 
   return (
-    <div style={{ borderBottom: '1px solid #000', paddingBottom: '5px' }}>
-      <select value={selectedYear} onChange={handleYearChange}>
-        <option value="">Year</option>
-        {[...Array(100).keys()].map((index) => (
-          <option key={index} value={2022 - index}>
-            {2022 - index}
-          </option>
-        ))}
-      </select>
-      <select value={selectedMonth} onChange={handleMonthChange}>
-        <option value="">Month</option>
-        {[...Array(12).keys()].map((index) => (
-          <option key={index} value={index + 1}>
-            {index + 1}
-          </option>
-        ))}
-      </select>
-      <select value={selectedDay} onChange={handleDayChange}>
-        <option value="">Day</option>
-        {[...Array(31).keys()].map((index) => (
-          <option key={index} value={index + 1}>
-            {index + 1}
-          </option>
-        ))}
-      </select>
-    </div>
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Controller
+        name="fromTime"
+        control={control}
+        defaultValue=""
+        rules={{
+          required: 'From time is required',
+          validate: (value) => {
+            const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
+            if (!timeRegex.test(value)) {
+              return 'Invalid time format (HH:MM)';
+            }
+            return true;
+          }
+        }}
+        render={({ field }) => (
+          <TimePicker
+            {...field}
+            label="From Time"
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                error={Boolean(errors.fromTime)}
+                helperText={errors.fromTime ? errors.fromTime.message : ''}
+              />
+            )}
+          />
+        )}
+      />
+      <Controller
+        name="toTime"
+        control={control}
+        defaultValue=""
+        rules={{
+          required: 'To time is required',
+          validate: (value) => {
+            const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
+            if (!timeRegex.test(value)) {
+              return 'Invalid time format (HH:MM)';
+            }
+            if (fromTime && value <= fromTime) {
+              return 'To time must be greater than from time';
+            }
+            return true;
+          }
+        }}
+        render={({ field }) => (
+          <TimePicker
+            {...field}
+            label="To Time"
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                error={Boolean(errors.toTime)}
+                helperText={errors.toTime ? errors.toTime.message : ''}
+              />
+            )}
+          />
+        )}
+      />
+      <Button type="submit" variant="contained" color="primary">Submit</Button>
+    </form>
   );
-};
+}
 
-export default DatePickerSelect;
+export default MyComponent;
