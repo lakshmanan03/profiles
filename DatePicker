@@ -1,87 +1,69 @@
 import React from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { TimePicker } from '@mui/lab';
-import { TextField, Button } from '@mui/material';
+import { useForm, Controller, useFieldArray } from 'react-hook-form';
+import { TextField, Button, Checkbox, FormControlLabel } from '@mui/material';
 
-function MyComponent() {
-  const {
+const DynamicForm = () => {
+  const { control, handleSubmit } = useForm();
+  const { fields, append, remove } = useFieldArray({
     control,
-    handleSubmit,
-    formState: { errors },
-    watch
-  } = useForm();
+    name: 'dynamicFields',
+  });
 
   const onSubmit = (data) => {
-    console.log(data); // You can further process the valid time data
+    console.log(data);
   };
 
-  const fromTime = watch('fromTime');
-  const toTime = watch('toTime');
+  const handleDeleteMultiple = () => {
+    const indicesToDelete = fields.reduce((acc, field, index) => {
+      if (field.checked) acc.push(index);
+      return acc;
+    }, []);
+    indicesToDelete.forEach((index) => remove(index));
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Controller
-        name="fromTime"
-        control={control}
-        defaultValue=""
-        rules={{
-          required: 'From time is required',
-          validate: (value) => {
-            const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
-            if (!timeRegex.test(value)) {
-              return 'Invalid time format (HH:MM)';
-            }
-            return true;
-          }
-        }}
-        render={({ field }) => (
-          <TimePicker
-            {...field}
-            label="From Time"
-            renderInput={(params) => (
+      <h2>Dynamic Form</h2>
+      {fields.map((field, index) => (
+        <div key={field.id}>
+          <Controller
+            name={`dynamicFields[${index}].textField`}
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
               <TextField
-                {...params}
-                error={Boolean(errors.fromTime)}
-                helperText={errors.fromTime ? errors.fromTime.message : ''}
+                {...field}
+                label={`Text Field ${index + 1}`}
+                sx={{ marginBottom: 2 }}
               />
             )}
           />
-        )}
-      />
-      <Controller
-        name="toTime"
-        control={control}
-        defaultValue=""
-        rules={{
-          required: 'To time is required',
-          validate: (value) => {
-            const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
-            if (!timeRegex.test(value)) {
-              return 'Invalid time format (HH:MM)';
-            }
-            if (fromTime && value <= fromTime) {
-              return 'To time must be greater than from time';
-            }
-            return true;
-          }
-        }}
-        render={({ field }) => (
-          <TimePicker
-            {...field}
-            label="To Time"
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                error={Boolean(errors.toTime)}
-                helperText={errors.toTime ? errors.toTime.message : ''}
+          <FormControlLabel
+            control={
+              <Checkbox
+                {...control}
+                name={`dynamicFields[${index}].checked`}
+                defaultChecked={false}
               />
-            )}
+            }
+            label="Delete"
           />
-        )}
-      />
-      <Button type="submit" variant="contained" color="primary">Submit</Button>
+          <Button type="button" onClick={() => remove(index)} sx={{ marginTop: 1, marginBottom: 2 }}>
+            Remove
+          </Button>
+        </div>
+      ))}
+      <Button type="button" onClick={() => append({ textField: '' })} sx={{ marginBottom: 2 }}>
+        Add Field
+      </Button>
+      <Button type="button" onClick={handleDeleteMultiple} sx={{ marginBottom: 2 }}>
+        Delete Selected
+      </Button>
+      <Button type="submit" variant="contained">
+        Submit
+      </Button>
     </form>
   );
-}
+};
 
-export default MyComponent;
+export default DynamicForm;
