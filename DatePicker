@@ -1,69 +1,24 @@
-import React from 'react';
-import { useForm, Controller, useFieldArray } from 'react-hook-form';
-import { TextField, Button, Checkbox, FormControlLabel } from '@mui/material';
-
-const DynamicForm = () => {
-  const { control, handleSubmit } = useForm();
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: 'dynamicFields',
-  });
-
-  const onSubmit = (data) => {
-    console.log(data);
+ const onSubmit = async (data) => {
+    try {
+      // Make API call
+      const response = await fetch('YOUR_API_ENDPOINT', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data), // Send form data as JSON
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to submit form');
+      }
+      
+      // Handle response
+      const responseData = await response.json();
+      console.log('Response:', responseData);
+      // Do something with the response data
+    } catch (error) {
+      console.error('Error:', error);
+      // Handle error
+    }
   };
-
-  const handleDeleteMultiple = () => {
-    const indicesToDelete = fields.reduce((acc, field, index) => {
-      if (field.checked) acc.push(index);
-      return acc;
-    }, []);
-    indicesToDelete.forEach((index) => remove(index));
-  };
-
-  return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <h2>Dynamic Form</h2>
-      {fields.map((field, index) => (
-        <div key={field.id}>
-          <Controller
-            name={`dynamicFields[${index}].textField`}
-            control={control}
-            defaultValue=""
-            render={({ field }) => (
-              <TextField
-                {...field}
-                label={`Text Field ${index + 1}`}
-                sx={{ marginBottom: 2 }}
-              />
-            )}
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                {...control}
-                name={`dynamicFields[${index}].checked`}
-                defaultChecked={false}
-              />
-            }
-            label="Delete"
-          />
-          <Button type="button" onClick={() => remove(index)} sx={{ marginTop: 1, marginBottom: 2 }}>
-            Remove
-          </Button>
-        </div>
-      ))}
-      <Button type="button" onClick={() => append({ textField: '' })} sx={{ marginBottom: 2 }}>
-        Add Field
-      </Button>
-      <Button type="button" onClick={handleDeleteMultiple} sx={{ marginBottom: 2 }}>
-        Delete Selected
-      </Button>
-      <Button type="submit" variant="contained">
-        Submit
-      </Button>
-    </form>
-  );
-};
-
-export default DynamicForm;
