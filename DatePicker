@@ -1,24 +1,30 @@
- const onSubmit = async (data) => {
-    try {
-      // Make API call
-      const response = await fetch('YOUR_API_ENDPOINT', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data), // Send form data as JSON
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to submit form');
-      }
-      
-      // Handle response
-      const responseData = await response.json();
-      console.log('Response:', responseData);
-      // Do something with the response data
-    } catch (error) {
-      console.error('Error:', error);
-      // Handle error
-    }
-  };
+.animated-placeholder::-webkit-input-placeholder {
+  /* WebKit browsers */
+  animation: moveUp 0.5s forwards;
+}
+
+.animated-placeholder::-moz-placeholder {
+  /* Mozilla Firefox */
+  animation: moveUp 0.5s forwards;
+}
+
+.animated-placeholder:-ms-input-placeholder {
+  /* Internet Explorer/Edge */
+  animation: moveUp 0.5s forwards;
+}
+
+.animated-placeholder::placeholder {
+  /* Other modern browsers */
+  animation: moveUp 0.5s forwards;
+}
+
+@keyframes moveUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
