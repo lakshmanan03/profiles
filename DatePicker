@@ -1,9 +1,9 @@
 import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { TimeField } from '@mui/x-date-pickers/TimeField';
+import { TimeClock } from '@mui/x-date-pickers/TimeClock';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { Button, Box } from '@mui/material';
+import { Button, Box, TextField, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { differenceInMinutes } from 'date-fns';
 
 const TimeForm = () => {
@@ -13,6 +13,9 @@ const TimeForm = () => {
       toTime: null,
     },
   });
+
+  const [openFromTimePicker, setOpenFromTimePicker] = React.useState(false);
+  const [openToTimePicker, setOpenToTimePicker] = React.useState(false);
 
   const onSubmit = (data) => {
     console.log('Form Data:', data);
@@ -26,6 +29,13 @@ const TimeForm = () => {
     return true;
   };
 
+  const validateDate = (value) => {
+    if (!(value instanceof Date) || isNaN(value)) {
+      return 'Invalid time format.';
+    }
+    return true;
+  };
+
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -35,16 +45,39 @@ const TimeForm = () => {
             control={control}
             rules={{ 
               required: 'From Time is required.', 
-              validate: value => value instanceof Date && !isNaN(value) || 'Invalid time format.'
+              validate: validateDate
             }}
             render={({ field }) => (
-              <TimeField
-                {...field}
-                label="From Time"
-                fullWidth
-                error={!!errors.fromTime}
-                helperText={errors.fromTime?.message}
-              />
+              <>
+                <TextField
+                  {...field}
+                  label="From Time"
+                  fullWidth
+                  onClick={() => setOpenFromTimePicker(true)}
+                  error={!!errors.fromTime}
+                  helperText={errors.fromTime?.message}
+                  value={field.value ? field.value.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                />
+                <Dialog open={openFromTimePicker} onClose={() => setOpenFromTimePicker(false)}>
+                  <DialogTitle>Select From Time</DialogTitle>
+                  <DialogContent>
+                    <TimeClock
+                      ampm={false}
+                      value={field.value}
+                      onChange={(newValue) => {
+                        field.onChange(newValue);
+                        setOpenFromTimePicker(false);
+                      }}
+                    />
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={() => setOpenFromTimePicker(false)}>Cancel</Button>
+                  </DialogActions>
+                </Dialog>
+              </>
             )}
           />
 
@@ -65,13 +98,36 @@ const TimeForm = () => {
               }
             }}
             render={({ field }) => (
-              <TimeField
-                {...field}
-                label="To Time"
-                fullWidth
-                error={!!errors.toTime}
-                helperText={errors.toTime?.message}
-              />
+              <>
+                <TextField
+                  {...field}
+                  label="To Time"
+                  fullWidth
+                  onClick={() => setOpenToTimePicker(true)}
+                  error={!!errors.toTime}
+                  helperText={errors.toTime?.message}
+                  value={field.value ? field.value.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                />
+                <Dialog open={openToTimePicker} onClose={() => setOpenToTimePicker(false)}>
+                  <DialogTitle>Select To Time</DialogTitle>
+                  <DialogContent>
+                    <TimeClock
+                      ampm={false}
+                      value={field.value}
+                      onChange={(newValue) => {
+                        field.onChange(newValue);
+                        setOpenToTimePicker(false);
+                      }}
+                    />
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={() => setOpenToTimePicker(false)}>Cancel</Button>
+                  </DialogActions>
+                </Dialog>
+              </>
             )}
           />
 
