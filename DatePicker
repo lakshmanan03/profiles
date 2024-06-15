@@ -1,30 +1,87 @@
-.animated-placeholder::-webkit-input-placeholder {
-  /* WebKit browsers */
-  animation: moveUp 0.5s forwards;
-}
+import React from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { TimeField } from '@mui/x-date-pickers/TimeField';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { Button, Box } from '@mui/material';
+import { differenceInMinutes } from 'date-fns';
 
-.animated-placeholder::-moz-placeholder {
-  /* Mozilla Firefox */
-  animation: moveUp 0.5s forwards;
-}
+const TimeForm = () => {
+  const { handleSubmit, control, getValues, formState: { errors } } = useForm({
+    defaultValues: {
+      fromTime: null,
+      toTime: null,
+    },
+  });
 
-.animated-placeholder:-ms-input-placeholder {
-  /* Internet Explorer/Edge */
-  animation: moveUp 0.5s forwards;
-}
+  const onSubmit = (data) => {
+    console.log('Form Data:', data);
+  };
 
-.animated-placeholder::placeholder {
-  /* Other modern browsers */
-  animation: moveUp 0.5s forwards;
-}
+  const validateTimeOrder = () => {
+    const { fromTime, toTime } = getValues();
+    if (fromTime && toTime && differenceInMinutes(toTime, fromTime) === 0) {
+      return 'From time and To time cannot be the same.';
+    }
+    return true;
+  };
 
-@keyframes moveUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+  return (
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Box display="flex" flexDirection="column" gap={2}>
+          <Controller
+            name="fromTime"
+            control={control}
+            rules={{ 
+              required: 'From Time is required.', 
+              validate: value => value instanceof Date && !isNaN(value) || 'Invalid time format.'
+            }}
+            render={({ field }) => (
+              <TimeField
+                {...field}
+                label="From Time"
+                fullWidth
+                error={!!errors.fromTime}
+                helperText={errors.fromTime?.message}
+              />
+            )}
+          />
+
+          <Controller
+            name="toTime"
+            control={control}
+            rules={{ 
+              required: 'To Time is required.', 
+              validate: value => {
+                const fromTime = getValues().fromTime;
+                if (!(value instanceof Date) || isNaN(value)) {
+                  return 'Invalid time format.';
+                }
+                if (fromTime && value && differenceInMinutes(value, fromTime) === 0) {
+                  return 'From time and To time cannot be the same.';
+                }
+                return true;
+              }
+            }}
+            render={({ field }) => (
+              <TimeField
+                {...field}
+                label="To Time"
+                fullWidth
+                error={!!errors.toTime}
+                helperText={errors.toTime?.message}
+              />
+            )}
+          />
+
+          <Button type="submit" variant="contained" color="primary">
+            Submit
+          </Button>
+        </Box>
+      </form>
+    </LocalizationProvider>
+  );
+};
+
+export default TimeForm;
