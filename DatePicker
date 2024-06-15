@@ -9,8 +9,8 @@ import { differenceInMinutes } from 'date-fns';
 const TimeForm = () => {
   const { handleSubmit, control, getValues, formState: { errors } } = useForm({
     defaultValues: {
-      fromTime: null,
-      toTime: null,
+      fromTime: new Date(), // Example: set default value to current date/time
+      toTime: null, // Example: set default value to null (no initial value)
     },
   });
 
@@ -66,7 +66,7 @@ const TimeForm = () => {
                   <DialogContent>
                     <TimeClock
                       ampm={false}
-                      value={field.value}
+                      value={field.value} // Use field.value as the default value for TimeClock
                       onChange={(newValue) => {
                         field.onChange(newValue);
                         setOpenFromTimePicker(false);
@@ -116,7 +116,7 @@ const TimeForm = () => {
                   <DialogContent>
                     <TimeClock
                       ampm={false}
-                      value={field.value}
+                      value={field.value} // Use field.value as the default value for TimeClock
                       onChange={(newValue) => {
                         field.onChange(newValue);
                         setOpenToTimePicker(false);
