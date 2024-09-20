@@ -1,143 +1,49 @@
-import React from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { TimeClock } from '@mui/x-date-pickers/TimeClock';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { Button, Box, TextField, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
-import { differenceInMinutes } from 'date-fns';
+# Redirect all HTTP traffic to HTTPS
+server {
+    listen 80;
+    server_name yourdomain.com;
+    
+    # Redirect HTTP to HTTPS
+    return 301 https://$host$request_uri;
+}
 
-const TimeForm = () => {
-  const { handleSubmit, control, getValues, formState: { errors } } = useForm({
-    defaultValues: {
-      fromTime: new Date(), // Example: set default value to current date/time
-      toTime: null, // Example: set default value to null (no initial value)
-    },
-  });
+# HTTPS server configuration
+server {
+    listen 443 ssl;
+    server_name yourdomain.com;
 
-  const [openFromTimePicker, setOpenFromTimePicker] = React.useState(false);
-  const [openToTimePicker, setOpenToTimePicker] = React.useState(false);
+    # SSL Certificate settings (replace with your actual paths)
+    ssl_certificate /etc/nginx/ssl/your_certificate.crt;
+    ssl_certificate_key /etc/nginx/ssl/your_certificate.key;
+    ssl_protocols TLSv1.2 TLSv1.3;  # Ensure strong encryption protocols
+    ssl_ciphers HIGH:!aNULL:!MD5;
 
-  const onSubmit = (data) => {
-    console.log('Form Data:', data);
-  };
+    # Define the root directory for your React app
+    root /var/www/your-app;
 
-  const validateTimeOrder = () => {
-    const { fromTime, toTime } = getValues();
-    if (fromTime && toTime && differenceInMinutes(toTime, fromTime) === 0) {
-      return 'From time and To time cannot be the same.';
+    # Set up Clear-Site-Data header (only for HTTPS)
+    add_header Clear-Site-Data "cache, cookies, storage, executionContexts" always;
+
+    # Set up Content Security Policy
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';";
+
+    # Serve static files from the React build directory
+    location / {
+        try_files $uri /index.html;
     }
-    return true;
-  };
 
-  const validateDate = (value) => {
-    if (!(value instanceof Date) || isNaN(value)) {
-      return 'Invalid time format.';
+    # Add caching headers for static files (optional)
+    location ~* \.(js|css|png|jpg|jpeg|gif|svg|ico)$ {
+        expires 30d;
+        add_header Cache-Control "public, no-transform";
     }
-    return true;
-  };
 
-  return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Box display="flex" flexDirection="column" gap={2}>
-          <Controller
-            name="fromTime"
-            control={control}
-            rules={{ 
-              required: 'From Time is required.', 
-              validate: validateDate
-            }}
-            render={({ field }) => (
-              <>
-                <TextField
-                  {...field}
-                  label="From Time"
-                  fullWidth
-                  onClick={() => setOpenFromTimePicker(true)}
-                  error={!!errors.fromTime}
-                  helperText={errors.fromTime?.message}
-                  value={field.value ? field.value.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                />
-                <Dialog open={openFromTimePicker} onClose={() => setOpenFromTimePicker(false)}>
-                  <DialogTitle>Select From Time</DialogTitle>
-                  <DialogContent>
-                    <TimeClock
-                      ampm={false}
-                      value={field.value} // Use field.value as the default value for TimeClock
-                      onChange={(newValue) => {
-                        field.onChange(newValue);
-                        setOpenFromTimePicker(false);
-                      }}
-                    />
-                  </DialogContent>
-                  <DialogActions>
-                    <Button onClick={() => setOpenFromTimePicker(false)}>Cancel</Button>
-                  </DialogActions>
-                </Dialog>
-              </>
-            )}
-          />
-
-          <Controller
-            name="toTime"
-            control={control}
-            rules={{ 
-              required: 'To Time is required.', 
-              validate: value => {
-                const fromTime = getValues().fromTime;
-                if (!(value instanceof Date) || isNaN(value)) {
-                  return 'Invalid time format.';
-                }
-                if (fromTime && value && differenceInMinutes(value, fromTime) === 0) {
-                  return 'From time and To time cannot be the same.';
-                }
-                return true;
-              }
-            }}
-            render={({ field }) => (
-              <>
-                <TextField
-                  {...field}
-                  label="To Time"
-                  fullWidth
-                  onClick={() => setOpenToTimePicker(true)}
-                  error={!!errors.toTime}
-                  helperText={errors.toTime?.message}
-                  value={field.value ? field.value.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                />
-                <Dialog open={openToTimePicker} onClose={() => setOpenToTimePicker(false)}>
-                  <DialogTitle>Select To Time</DialogTitle>
-                  <DialogContent>
-                    <TimeClock
-                      ampm={false}
-                      value={field.value} // Use field.value as the default value for TimeClock
-                      onChange={(newValue) => {
-                        field.onChange(newValue);
-                        setOpenToTimePicker(false);
-                      }}
-                    />
-                  </DialogContent>
-                  <DialogActions>
-                    <Button onClick={() => setOpenToTimePicker(false)}>Cancel</Button>
-                  </DialogActions>
-                </Dialog>
-              </>
-            )}
-          />
-
-          <Button type="submit" variant="contained" color="primary">
-            Submit
-          </Button>
-        </Box>
-      </form>
-    </LocalizationProvider>
-  );
-};
-
-export default TimeForm;
+    # Handle API proxy (optional, if your app uses API backend)
+    location /api/ {
+        proxy_pass http://localhost:3001;  # Assuming the API is running on port 3001
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
