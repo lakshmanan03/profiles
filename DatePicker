@@ -1,17 +1,105 @@
-Here’s a positive and constructive appraisal review for a Java developer with two years of experience:
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Masked Input Fields</title>
+    <style>
+        .container {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ccc;
+            width: 240px;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        .container input {
+            border: none;
+            outline: none;
+            text-align: center;
+            font-size: 16px;
+            width: 100px;
+        }
+        #maskedField {
+            width: 60px;
+        }
+    </style>
+</head>
+<body>
 
-1. **Strong Technical Skills in Java**: He consistently demonstrates a solid understanding of Java, with his code reflecting both efficiency and clarity. His technical skills are a valuable asset to the team.
+    <div class="container">
+        <input type="text" id="firstField" maxlength="9" oninput="validateInput(this)" onkeyup="moveNext(this, 'maskedField')">
+        <input type="text" id="maskedField" maxlength="4" oninput="maskInput(this)" onkeydown="handleBackspace(event, this)">
+        <input type="text" id="thirdField" maxlength="6" oninput="validateInput(this)" onkeyup="moveNext(this, 'thirdField')">
+    </div>
 
-2. **Quick Learner**: He is quick to grasp new concepts, technologies, and frameworks, which has enabled him to take on more complex tasks and responsibilities over the last year.
+    <script>
+        function moveNext(current, nextId) {
+            if (current.value.length === current.maxLength) {
+                document.getElementById(nextId).focus();
+            }
+        }
 
-3. **Proactive Problem-Solving**: He shows initiative in identifying and solving issues, often troubleshooting problems independently before seeking assistance, which has been beneficial in maintaining project timelines.
+        function validateInput(field) {
+        
+            field.value = field.value.replace(/\D/g, ''); // Remove non-numeric characters
+        }
+        
+        
+        function validateInput1(field) {
+        if(field.value.length ==3 && field.value.substring(0,2)==='00' && 
+        field.value.substring(2,3)!=='0')
+        
+        {
+        alert('please enter a valid value');
+        document.getElementById('firstField').value=field.value.substring(0,2);
+        return;
+        }
+        if(field.value.length ==4 && field.value.substring(0,3)==='000' && 
+        field.value.substring(3,4)==='0')
+        
+        {
+        alert('please enter a valid value');
+        document.getElementById('firstField').value=field.value.substring(0,3);
+        return;
+        }
+        
+        
+        if(field.value.length >6  && field.value.substring(0,3)!=='000')
+        {
+        document.getElementById('firstField').value=field.value.substring(0,6);
+      
+      document.getElementById('maskedField').focus();
+     
+    
+        }
+        
+            field.value = field.value.replace(/\D/g, ''); // Remove non-numeric characters
+        }
 
-4. **Reliable Team Player**: He collaborates well with other team members, providing support and sharing his knowledge, which has strengthened the team’s overall productivity and cohesion.
+        function maskInput(field) {
+            let actualValue = field.dataset.realValue || ""; // Store actual input
+            let newChar = field.value[field.value.length - 1] || "";
 
-5. **Strong Attention to Detail**: His work is thorough, and he pays close attention to detail, reducing the need for extensive code revisions or rework.
+            if (!isNaN(newChar) && newChar !== " " && actualValue.length < 4) {
+                field.dataset.realValue = actualValue + newChar; // Append actual number
+            }
 
-6. **Willingness to Take Ownership**: He readily accepts responsibility for his tasks, ensuring timely delivery and quality. He shows a high level of commitment to project outcomes.
+            field.value = "*".repeat(field.dataset.realValue.length); // Mask input
 
-7. **Growth-Oriented Mindset**: He demonstrates a continuous desire to improve his skills and knowledge, actively seeking feedback and showing a commitment to professional growth.
+            if (field.dataset.realValue.length === 4) {
+                document.getElementById('thirdField').focus(); // Move to next field
+            }
+        }
 
-These points highlight his strengths and potential, recognizing his contributions and positive impact on the team.
+        function handleBackspace(event, field) {
+            let actualValue = field.dataset.realValue || "";
+
+            if (event.key === "Backspace" && actualValue.length > 0) {
+                field.dataset.realValue = actualValue.slice(0, -1); // Remove last character
+                field.value = "*".repeat(field.dataset.realValue.length); // Update mask
+                event.preventDefault(); // Prevent default backspace behavior
+            }
+        }
+    </script>
+
+</body>
+</html>
