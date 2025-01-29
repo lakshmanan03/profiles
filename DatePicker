@@ -99,6 +99,24 @@
                 event.preventDefault(); // Prevent default backspace behavior
             }
         }
+
+function handleMaskedKeyDown(event, field) {
+            let actualValue = field.dataset.realValue || "";
+
+            if (event.key === "Backspace" || event.key === "Delete") {
+                let cursorPos = field.selectionStart; // Get cursor position
+
+                if (cursorPos > 0) {
+                    // Remove character at cursor position
+                    actualValue = actualValue.substring(0, cursorPos - 1) + actualValue.substring(cursorPos);
+                }
+
+                field.dataset.realValue = actualValue;
+                field.value = "*".repeat(actualValue.length); // Update masked display
+
+                event.preventDefault(); // Prevent default backspace behavior
+            }
+        }
     </script>
 
 </body>
