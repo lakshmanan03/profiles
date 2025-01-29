@@ -16,108 +16,121 @@
             outline: none;
             text-align: center;
             font-size: 16px;
-            width: 100px;
+            width: 200px;
         }
         #maskedField {
-            width: 60px;
+            width: 200px;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <input type="text" id="firstField" maxlength="9" oninput="validateInput(this)" onkeyup="moveNext(this, 'maskedField')">
-        <input type="text" id="maskedField" maxlength="4" oninput="maskInput(this)" onkeydown="handleBackspace(event, this)">
-        <input type="text" id="thirdField" maxlength="6" oninput="validateInput(this)" onkeyup="moveNext(this, 'thirdField')">
-    </div>
+  <input maxlength =19 type="text" id="myInput" onkeydown="handleKey(event,this)" placeholder="Enter numbers only" />
 
-    <script>
-        function moveNext(current, nextId) {
-            if (current.value.length === current.maxLength) {
-                document.getElementById(nextId).focus();
+<script>
+var firstsix="";
+var maskedfour='';
+var unmaskedfour = "";
+var lastsix="";
+
+function handleKey(event,field) {
+    // Allowed keys: 0-9, Backspace, Delete, Left Arrow, Right Arrow
+   setTimeout(() => { 
+    if (
+        (event.key >= "0" && event.key <= "9") || // Numbers 0-9
+        event.key === "Backspace" || // Backspace
+        event.key === "Delete" || // Delete
+        event.key === "ArrowLeft" || // Left Arrow
+        event.key === "ArrowRight" // Right Arrow
+    ) {
+    	if(event.key >= "0" && event.key <= "9"){
+        	if(field.value.length > 19)
+            	{return;}
+        	if(field.value.length < 10 && firstsix.length < 10){
+            	let newChar = field.value.charAt(field.value.length - 1);
+            	firstsix=firstsix+newChar;
             }
-        }
-
-        function validateInput(field) {
-        
-            field.value = field.value.replace(/\D/g, ''); // Remove non-numeric characters
-        }
-        
-        
-        function validateInput1(field) {
-        if(field.value.length ==3 && field.value.substring(0,2)==='00' && 
-        field.value.substring(2,3)!=='0')
-        
-        {
-        alert('please enter a valid value');
-        document.getElementById('firstField').value=field.value.substring(0,2);
-        return;
-        }
-        if(field.value.length ==4 && field.value.substring(0,3)==='000' && 
-        field.value.substring(3,4)==='0')
-        
-        {
-        alert('please enter a valid value');
-        document.getElementById('firstField').value=field.value.substring(0,3);
-        return;
-        }
-        
-        
-        if(field.value.length >6  && field.value.substring(0,3)!=='000')
-        {
-        document.getElementById('firstField').value=field.value.substring(0,6);
-      
-      document.getElementById('maskedField').focus();
-     
-    
-        }
-        
-            field.value = field.value.replace(/\D/g, ''); // Remove non-numeric characters
-        }
-
-        function maskInput(field) {
-            let actualValue = field.dataset.realValue || ""; // Store actual input
-            let newChar = field.value[field.value.length - 1] || "";
-
-            if (!isNaN(newChar) && newChar !== " " && actualValue.length < 4) {
-                field.dataset.realValue = actualValue + newChar; // Append actual number
+            if(field.value.length > 9 && field.value.length < 14){
+            	let newChar = field.value.charAt(field.value.length - 1);
+            	unmaskedfour=unmaskedfour+newChar;
+                maskedfour='*'+maskedfour;
             }
-
-            field.value = "*".repeat(field.dataset.realValue.length); // Mask input
-
-            if (field.dataset.realValue.length === 4) {
-                document.getElementById('thirdField').focus(); // Move to next field
-            }
+            if(field.value.length > 13 && lastsix.length < 6){
+            	let newChar = field.value.charAt(field.value.length - 1);
+            	lastsix=lastsix+newChar;
+            }  
+        field.value = firstsix+maskedfour+lastsix;
+        console.log("Value :",field.value);
+        console.log("firstsix :",firstsix);
+        console.log("unmaskedfour :",unmaskedfour);
+        console.log("lastsix :",lastsix);
         }
-
-        function handleBackspace(event, field) {
-            let actualValue = field.dataset.realValue || "";
-
-            if (event.key === "Backspace" && actualValue.length > 0) {
-                field.dataset.realValue = actualValue.slice(0, -1); // Remove last character
-                field.value = "*".repeat(field.dataset.realValue.length); // Update mask
-                event.preventDefault(); // Prevent default backspace behavior
-            }
-        }
-
-function handleMaskedKeyDown(event, field) {
-            let actualValue = field.dataset.realValue || "";
-
-            if (event.key === "Backspace" || event.key === "Delete") {
-                let cursorPos = field.selectionStart; // Get cursor position
-
-                if (cursorPos > 0) {
-                    // Remove character at cursor position
-                    actualValue = actualValue.substring(0, cursorPos - 1) + actualValue.substring(cursorPos);
+        
+        //DELETION
+        if(event.key === "Backspace" || event.key === "Delete"){
+        	let curpos = field.selectionStart; // Get cursor position
+			console.log("curpos: ", curpos);
+            console.log("field val: ", field.value);
+            //to find the box
+            //if field value has *
+            if(field.value.includes("*")){
+            console.log("in *");
+            	if(curpos > field.value.lastIndexOf("*") ){//last box
+                	let totlength = field.value.length;
+                    let pos = lastsix.length - (totlength-curpos);
+                    console.log("pos: ", pos);
+                    console.log("1: ", lastsix.substring(0,pos-1));
+                    console.log("2: ", lastsix.substring(pos));
+                    lastsix = lastsix.substring(0,pos-1) + lastsix.substring(pos);
+                    
                 }
-
-                field.dataset.realValue = actualValue;
-                field.value = "*".repeat(actualValue.length); // Update masked display
-
-                event.preventDefault(); // Prevent default backspace behavior
+                
+                console.log("firstindexof *",field.value.indexOf("*"));
+                console.log("lasttindexof *",field.value.lastIndexOf("*"));
+              
+                if((curpos >= (field.value.indexOf("*")) && curpos <= (field.value.lastIndexOf("*")+1)) || field.value.indexOf("*") === field.value.lastIndexOf("*")){// mid box
+                console.log("ld");
+                	let totlength = firstsix.length + maskedfour.length;
+                    let pos = maskedfour.length - (totlength-curpos);
+                    console.log("pos: ", pos);
+                    console.log("1: ", unmaskedfour.substring(0,pos));
+                    console.log("2: ", unmaskedfour.substring(pos+1));
+                    maskedfour = maskedfour.substring(0,pos) + maskedfour.substring(pos+1);
+                    unmaskedfour = unmaskedfour.substring(0,pos) + unmaskedfour.substring(pos+1)
+                }  
+                
+               
             }
+            else
+            { 	maskedfour='';
+            	unmaskedfour='';
+                //first box
+                let totlength = field.value.length;
+                    let pos = firstsix.length - (totlength-curpos);        
+                    firstsix = firstsix.substring(0,pos-1) + firstsix.substring(pos);
+                    
+            }
+            
+        field.value = firstsix+maskedfour+lastsix;
+        console.log("Value :",field.value);
+        console.log("firstsix :",firstsix);
+        console.log("unmaskedfour :",unmaskedfour);
+        console.log("lastsix :",lastsix);    
         }
-    </script>
+        
+        return; // Allow the key
+    }
+	else{
+		return;
+	}
+    
+    // Prevent any other keypress
+    event.preventDefault();
+    }, 1);
+}
+</script>
+
+
 
 </body>
 </html>
