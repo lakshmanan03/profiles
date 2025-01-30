@@ -1,20 +1,210 @@
-1. Cost Efficiency through Code Optimization:
-I contributed to the company's financial performance by optimizing code for performance and efficiency, reducing server load, which led to a [specific percentage] decrease in infrastructure costs over the past year.
-2. Reducing Technical Debt:
-By proactively addressing technical debt, I minimized future maintenance costs, ensuring that resources were used efficiently. This reduced potential expenses related to debugging and long-term system performance issues.
-3. Time and Resource Savings through Automation:
-I implemented automation processes for [e.g., testing, deployment, monitoring], which saved time and resources. This not only improved delivery timelines but also decreased reliance on manual intervention, translating into labor cost savings.
-4. Improving Application Scalability:
-I developed scalable solutions that allowed the company to handle increased traffic and user demands without additional hardware costs, effectively controlling expenses as the user base grew.
-5. Supporting Revenue-Generating Features:
-I worked on building features that directly contributed to [new revenue streams or improved user experience], which helped increase customer retention and acquisition. For instance, my work on [feature name] helped [impact on sales, customer conversion rates, etc.].
-6. Contribution to Lean Processes:
-By adopting agile methodologies and implementing lean coding practices, I ensured that development cycles were faster and more cost-effective. This reduced project overruns and helped deliver within budget.
-7. Collaboration with Business Stakeholders to Minimize Costs:
-I actively collaborated with business and product teams to ensure that the technical solutions we developed aligned with business goals while keeping costs low, such as recommending cost-effective technologies or solutions.
-8. Cloud Cost Optimization:
-I optimized cloud-based resources by scaling down unused services and switching to more cost-efficient cloud services, reducing monthly operational costs by [specific percentage or amount].
-9. Improved Application Reliability & Reduced Downtime:
-My focus on system reliability through proactive monitoring and troubleshooting helped reduce system downtime, avoiding potential financial losses due to outages.
-10. Budget-Conscious Technology Choices:
-When evaluating tools and technologies, I ensured we adopted solutions that provided the best value for their cost. For example, I implemented [specific tool or service] that provided necessary functionality at a lower cost compared to other options.
+var firstsix="";
+var maskedfour='';
+var unmaskedfour = "";
+var lastsix="";
+
+function handleKey(event,field) {
+    // Allowed keys: 0-9, Backspace, Delete, Left Arrow, Right Arrow
+   setTimeout(() => { 
+       if (
+        (event.key >= "0" && event.key <= "9") || // Numbers 0-9
+        event.key === "Backspace" || // Backspace
+        event.key === "Delete" || // Delete
+        event.key === "ArrowLeft" || // Left Arrow
+        event.key === "ArrowRight" // Right Arrow
+    ) {
+    
+    	if(event.key >= "0" && event.key <= "9"){
+        
+        
+        	let incurpos = field.selectionStart; // Get cursor position
+			console.log("curpos: ", incurpos);
+            console.log("field val: ", field.value);
+            //to find the box
+            //if field value has *
+            if(field.value.includes("*")){
+            console.log("in *");
+            	if(incurpos > field.value.lastIndexOf("*") )
+            	{//last box
+            	 console.log("lasin");
+                	let totlength = field.value.length;
+                    let pos = lastsix.length - (totlength-incurpos);
+                    console.log("pos: ", pos);
+                    console.log("1: ", lastsix.substring(0,pos-1));
+                    console.log("2: ", lastsix.substring(pos));
+                    let newChar = field.value.charAt(field.value.length - 1);
+            
+                    lastsix = lastsix.substring(0,pos) +newChar+ lastsix.substring(pos+l);
+                   
+                    
+                }
+                
+                console.log("firstindexof *",field.value.indexOf("*"));
+                console.log("lasttindexof *",field.value.lastIndexOf("*"));
+              
+                if((incurpos >=(field.value.indexOf("*")) && incurpos <= (field.value.lastIndexOf("*")+1)) || field.value.indexOf("*") === field.value.lastIndexOf("*")){// mid box
+                console.log("min");
+                	let totlength = firstsix.length + maskedfour.length;
+                    let pos = maskedfour.length - (totlength-incurpos);
+                         let newChar = field.value.charAt(field.value.length - 1);
+                    console.log("pos: ", pos);
+                    console.log("1: ", unmaskedfour.substring(0,pos));
+                    console.log("2: ", unmaskedfour.substring(pos+1));
+                    maskedfour = maskedfour+'*';
+                    unmaskedfour = unmaskedfour.substring(0,pos) +newChar+ unmaskedfour.substring(pos+1);
+                      
+                }  
+                if(incurpos <= field.value.indexOf("*"))//first box
+                {
+                     console.log("firstin");
+                 let totlength = firstsix.length;
+                    let pos = firstsix.length - (totlength-incurpos);     
+                    console.log("pos: ", pos);
+                                             let newChar = field.value.charAt(field.value.length - 1);
+                    firstsix = firstsix.substring(0,pos) +newChar+firstsix.substring(pos+1);
+                   
+                
+                }
+               
+            }
+            else
+            {
+           
+            console.log('inside insert else');
+              //first box
+            if(firstsix.length===0 && incurpos==0)
+            {
+                let newChar = field.value.charAt(field.value.length - 1);
+            	firstsix=firstsix+newChar;
+            }
+              if(firstsix.length >0 && incurpos==0)
+            {
+                let newChar = field.value.charAt(field.value.length - 1);
+            	firstsix=newChar+firstsix;
+            }
+              if(firstsix.length >0 && incurpos>0 && incurpos<= firstsix.length && firstsix.length<10)
+            {
+                let newChar = field.value.charAt(field.value.length - 1);
+                 let pos = firstsix.length - (totlength-incurpos);        
+                    firstsix = firstsix.substring(0,pos) +newChar+firstsix.substring(pos+1);
+                    }
+            
+          
+          if(firstsix.length===9 && incurpos==9)
+          {
+              //first asterisk
+              let newChar = field.value.charAt(field.value.length - 1);
+            	unmaskedfour=unmaskedfour+newChar;
+                maskedfour='*'+maskedfour;
+              
+          }
+              
+             
+            }
+                    
+            }
+            
+        field.value = firstsix+maskedfour+lastsix;
+        console.log("Value :",field.value);
+        console.log("firstsix :",firstsix);
+        console.log("unmaskedfour :",unmaskedfour);
+        console.log("lastsix :",lastsix);    
+        
+       
+       
+        var deleted=false;
+        //DELETION
+        if(event.key === "Backspace" || event.key === "Delete"){
+        	let curpos = field.selectionStart; // Get cursor position
+			console.log("curpos: ", curpos);
+            console.log("field val: ", field.value);
+            //to find the box
+            //if field value has *
+            if(field.value.includes("*")){
+            console.log("in *");
+            	if(curpos > field.value.lastIndexOf("*") ){//last box
+                	let totlength = field.value.length;
+                    let pos = lastsix.length - (totlength-curpos);
+                    console.log("pos: ", pos);
+                    console.log("1: ", lastsix.substring(0,pos-1));
+                    console.log("2: ", lastsix.substring(pos));
+                    lastsix = lastsix.substring(0,pos-1) + lastsix.substring(pos);
+                    deleted=true;
+                    
+                }
+                
+                console.log("firstindexof *",field.value.indexOf("*"));
+                console.log("lasttindexof *",field.value.lastIndexOf("*"));
+              
+                if((curpos >=(field.value.indexOf("*")) && curpos <= (field.value.lastIndexOf("*")+1)) || field.value.indexOf("*") === field.value.lastIndexOf("*")){// mid box
+                console.log("ld");
+                	let totlength = firstsix.length + maskedfour.length;
+                    let pos = maskedfour.length - (totlength-curpos);
+                    console.log("pos: ", pos);
+                    console.log("1: ", unmaskedfour.substring(0,pos));
+                    console.log("2: ", unmaskedfour.substring(pos+1));
+                    maskedfour = maskedfour.substring(0,pos) + maskedfour.substring(pos+1);
+                    unmaskedfour = unmaskedfour.substring(0,pos) + unmaskedfour.substring(pos+1);
+                      deleted=true;
+                }  
+                if(curpos <= field.value.indexOf("*"))//first box
+                {
+                 let totlength = firstsix.length;
+                    let pos = firstsix.length - (totlength-curpos);     
+                    console.log("pos: ", pos);
+                    firstsix = firstsix.substring(0,pos) + firstsix.substring(pos+1);
+                      deleted=true;
+                
+                }
+               
+            }
+            else
+            {
+            if(!deleted){
+            console.log('inside else');
+            maskedfour='';
+            unmaskedfour='';
+                //first box
+               
+               if(curpos===firstsix.length){
+               
+               console.log('in last ');
+                    let totlength = firstsix.length+lastsix.length;
+                    let pos = lastsix.length - (totlength-curpos);        
+                    lastsix = lastsix.substring(0,pos) + lastsix.substring(pos+1);
+               }
+                if(curpos<=firstsix.length)
+                {
+                console.log('in first six');
+                let totlength = firstsix.length;
+                    let pos = firstsix.length - (totlength-curpos);        
+                    firstsix = firstsix.substring(0,pos) + firstsix.substring(pos+1);
+                    }
+                    
+                   else
+                    {
+                    console.log('in last six');
+                    let totlength = firstsix.length+lastsix.length;
+                    let pos = lastsix.length - (totlength-curpos);        
+                    lastsix = lastsix.substring(0,pos) + lastsix.substring(pos+1);
+                    }
+                    
+            }}
+            
+        field.value = firstsix+maskedfour+lastsix;
+        console.log("Value :",field.value);
+        console.log("firstsix :",firstsix);
+        console.log("unmaskedfour :",unmaskedfour);
+        console.log("lastsix :",lastsix);    
+        }
+        
+        return; // Allow the key
+   }
+	else{
+		return;
+	}
+    
+    // Prevent any other keypress
+    event.preventDefault();
+    }, 1);
+}
