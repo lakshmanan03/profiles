@@ -1,119 +1,24 @@
-var firstsix="";
-var maskedfour='';
-var unmaskedfour = "";
-var lastsix="";
+<!DOCTYPE html>
+<html>
+<body>
 
-function handleKey(event,field) {
-    // Allowed keys: 0-9, Backspace, Delete, Left Arrow, Right Arrow
-   setTimeout(() => { 
-       if (
-        (event.key >= "0" && event.key <= "9") || // Numbers 0-9
-        event.key === "Backspace" || // Backspace
-        event.key === "Delete" || // Delete
-        event.key === "ArrowLeft" || // Left Arrow
-        event.key === "ArrowRight" // Right Arrow
-    ) {
-    
-    	if(event.key >= "0" && event.key <= "9"){
-        
-        
-        	let incurpos = field.selectionStart; // Get cursor position
-			console.log("curpos: ", incurpos);
-            console.log("field val: ", field.value);
-            //to find the box
-            //if field value has *
-            if(field.value.includes("*")){
-            console.log("in *");
-            	if(incurpos > field.value.lastIndexOf("*") )
-            	{//last box
-            	 console.log("lasin");
-                	let totlength = field.value.length;
-                    let pos = lastsix.length - (totlength-incurpos);
-                    console.log("pos: ", pos);
-                    console.log("1: ", lastsix.substring(0,pos-1));
-                    console.log("2: ", lastsix.substring(pos));
-                    let newChar = field.value.charAt(field.value.length - 1);
-            
-                    lastsix = lastsix.substring(0,pos) +newChar+ lastsix.substring(pos+l);
-                   
-                    
-                }
-                
-                console.log("firstindexof *",field.value.indexOf("*"));
-                console.log("lasttindexof *",field.value.lastIndexOf("*"));
-              
-                if((incurpos >=(field.value.indexOf("*")) && incurpos <= (field.value.lastIndexOf("*")+1)) || field.value.indexOf("*") === field.value.lastIndexOf("*")){// mid box
-                console.log("min");
-                	let totlength = firstsix.length + maskedfour.length;
-                    let pos = maskedfour.length - (totlength-incurpos);
-                         let newChar = field.value.charAt(field.value.length - 1);
-                    console.log("pos: ", pos);
-                    console.log("1: ", unmaskedfour.substring(0,pos));
-                    console.log("2: ", unmaskedfour.substring(pos+1));
-                    maskedfour = maskedfour+'*';
-                    unmaskedfour = unmaskedfour.substring(0,pos) +newChar+ unmaskedfour.substring(pos+1);
-                      
-                }  
-                if(incurpos <= field.value.indexOf("*"))//first box
-                {
-                     console.log("firstin");
-                 let totlength = firstsix.length;
-                    let pos = firstsix.length - (totlength-incurpos);     
-                    console.log("pos: ", pos);
-                                             let newChar = field.value.charAt(field.value.length - 1);
-                    firstsix = firstsix.substring(0,pos) +newChar+firstsix.substring(pos+1);
-                   
-                
-                }
-               
-            }
-            else
-            {
-           
-            console.log('inside insert else');
-              //first box
-            if(firstsix.length===0 && incurpos==0)
-            {
-                let newChar = field.value.charAt(field.value.length - 1);
-            	firstsix=firstsix+newChar;
-            }
-              if(firstsix.length >0 && incurpos==0)
-            {
-                let newChar = field.value.charAt(field.value.length - 1);
-            	firstsix=newChar+firstsix;
-            }
-              if(firstsix.length >0 && incurpos>0 && incurpos<= firstsix.length && firstsix.length<10)
-            {
-                let newChar = field.value.charAt(field.value.length - 1);
-                 let pos = firstsix.length - (totlength-incurpos);        
-                    firstsix = firstsix.substring(0,pos) +newChar+firstsix.substring(pos+1);
-                    }
-            
-          
-          if(firstsix.length===9 && incurpos==9)
-          {
-              //first asterisk
-              let newChar = field.value.charAt(field.value.length - 1);
-            	unmaskedfour=unmaskedfour+newChar;
-                maskedfour='*'+maskedfour;
-              
-          }
-              
-             
-            }
-                    
-            }
-            
-        field.value = firstsix+maskedfour+lastsix;
-        console.log("Value :",field.value);
-        console.log("firstsix :",firstsix);
-        console.log("unmaskedfour :",unmaskedfour);
-        console.log("lastsix :",lastsix);    
-        
-       
-       
-        var deleted=false;
-        //DELETION
+
+  <input type="text" id="fname" onkeyup="handlekey(event,this)" name="fname">
+
+
+<script>
+
+
+let firstsix="";
+let unmaskedfour="";
+let maskedfour="";
+let lastsix="";
+let cardnum="";
+
+function handlekey(event,field) {
+setTimeout(() => { 
+var deleted=false;
+//DELETION
         if(event.key === "Backspace" || event.key === "Delete"){
         	let curpos = field.selectionStart; // Get cursor position
 			console.log("curpos: ", curpos);
@@ -122,7 +27,7 @@ function handleKey(event,field) {
             //if field value has *
             if(field.value.includes("*")){
             console.log("in *");
-            	if(curpos > field.value.lastIndexOf("*") ){//last box
+            	if(curpos > field.value.lastIndexOf("*")){//last box
                 	let totlength = field.value.length;
                     let pos = lastsix.length - (totlength-curpos);
                     console.log("pos: ", pos);
@@ -192,19 +97,136 @@ function handleKey(event,field) {
             }}
             
         field.value = firstsix+maskedfour+lastsix;
+        cardnum=firstsix+maskedfour+lastsix;
         console.log("Value :",field.value);
         console.log("firstsix :",firstsix);
         console.log("unmaskedfour :",unmaskedfour);
         console.log("lastsix :",lastsix);    
         }
+
+//INSERTION
+if(event.key >="0" && event.key <= "9")
+{
+
+let curs = event.target.selectionEnd;
+console.log("curs: ", curs);
+if(field.value.includes('*'))
+{
+console.log("in *");
+	if(curs-1 <= firstsix.length && firstsix.length < 6){//first box
+        console.log("in first *");
+        let newchar = field.value.charAt(curs-1);
+        console.log("new char: ", newchar);
+        firstsix = firstsix.substring(0, curs-1) + newchar + firstsix.substring(curs-1);
         
-        return; // Allow the key
-   }
-	else{
+        console.log("first : ", firstsix);
+		console.log("middle : ", unmaskedfour);
+		console.log("maskmiddle : ", maskedfour);
+		console.log("last : ", lastsix);
+        field.value=firstsix+maskedfour+lastsix;
 		return;
-	}
+    }
     
-    // Prevent any other keypress
-    event.preventDefault();
-    }, 1);
+	if((curs >=(field.value.indexOf("*")) && curs<= (field.value.lastIndexOf("*")+1) && unmaskedfour.length <4) || field.value.indexOf("*") === field.value.lastIndexOf("*") ||(unmaskedfour.length <4 && field.value.charAt(curs-2)==='*'))
+    {//middle box
+    	console.log("in middle *");
+        let pos = curs-firstsix.length;
+        console.log("pos: ", pos);
+    	let newchar = field.value.charAt(curs-1);
+        console.log("new char: ", newchar);
+		unmaskedfour = unmaskedfour.substring(0, pos-1) + newchar + unmaskedfour.substring(pos-1);
+        maskedfour = '*' + maskedfour;
+        
+        console.log("first : ", firstsix);
+		console.log("middle : ", unmaskedfour);
+		console.log("maskmiddle : ", maskedfour);
+		console.log("last : ", lastsix);
+        field.value=firstsix+maskedfour+lastsix;
+        cardnum=firstsix+maskedfour+lastsix;
+		return;
+    }  
+    
+    if(curs > (field.value.lastIndexOf("*")) &&  lastsix.length < 6){//last box
+    	console.log("in last *");
+        let pos = curs-(firstsix.length + 4);
+        console.log("pos: ", pos);
+    	let newchar = field.value.charAt(curs-1);
+        console.log("new char: ", newchar);
+        lastsix = lastsix.substring(0, pos-1) + newchar + lastsix.substring(pos-1);
+        
+        console.log("first : ", firstsix);
+		console.log("middle : ", unmaskedfour);
+		console.log("maskmiddle : ", maskedfour);
+		console.log("last : ", lastsix);
+		field.value=firstsix+maskedfour+lastsix;
+        cardnum=firstsix+maskedfour+lastsix;
+		return;
+    }
 }
+
+else{
+	if(curs-1 <= firstsix.length && firstsix.length < 6){//first box
+        console.log("in first");
+        let newchar = field.value.charAt(curs-1);
+        console.log("new char: ", newchar);
+        firstsix = firstsix.substring(0, curs-1) + newchar + firstsix.substring(curs-1);
+        
+        console.log("first : ", firstsix);
+		console.log("middle : ", unmaskedfour);
+		console.log("maskmiddle : ", maskedfour);
+		console.log("last : ", lastsix);
+        field.value=firstsix+maskedfour+lastsix;
+        cardnum=firstsix+maskedfour+lastsix;
+		return;
+    }
+        
+        
+    if(curs >= firstsix.length+2){
+    //last box 
+    	console.log("in last");
+    	let newchar = field.value.charAt(curs-1);
+        console.log("new char: ", newchar);
+		lastsix = lastsix.substring(0,   (curs-firstsix.length)-1) + newchar + lastsix.substring(curs-firstsix.length-1);
+        console.log("first : ", firstsix);
+		console.log("middle : ", unmaskedfour);
+		console.log("maskmiddle : ", maskedfour);
+		console.log("last : ", lastsix);
+        field.value=firstsix+maskedfour+lastsix;
+        cardnum=firstsix+maskedfour+lastsix;
+		return;
+    }
+    
+    if(curs > firstsix.length && unmaskedfour.length < 4  ){//middle box
+    	console.log("in middle");
+    	let newchar = field.value.charAt(curs-1);
+        console.log("new char: ", newchar);
+		unmaskedfour = unmaskedfour.substring(0, curs-1) +           newchar + unmaskedfour.substring(curs-1);
+        maskedfour = '*' + maskedfour;
+        
+        console.log("first : ", firstsix);
+		console.log("middle : ", unmaskedfour);
+		console.log("maskmiddle : ", maskedfour);
+		console.log("last : ", lastsix);
+        field.value=firstsix+maskedfour+lastsix;
+        cardnum=firstsix+maskedfour+lastsix;
+		return;
+    }
+}
+console.log("first : ", firstsix);
+console.log("middle : ", unmaskedfour);
+console.log("maskmiddle : ", maskedfour);
+console.log("last : ", lastsix);
+
+field.value=firstsix+maskedfour+lastsix;
+cardnum=firstsix+maskedfour+lastsix;
+return;
+
+}
+
+}, 2);
+}
+
+</script>
+
+</body>
+</html>
