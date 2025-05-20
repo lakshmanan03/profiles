@@ -1,104 +1,42 @@
-XSS Prevention Implementation in Our Java Web Application
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Date Format Validation</title>
+</head>
+<body>
+  <form onsubmit="return validateDate()">
+    <label for="date">Enter date (MMDDYYYY):</label>
+    <input type="text" id="date" name="date" maxlength="8" />
+    <input type="submit" value="Submit" />
+  </form>
 
-1. Introduction
+  <script>
+    function validateDate() {
+      const dateField = document.getElementById('date').value.trim();
+      const dateRegex = /^(0[1-9]|1[0-2])(0[1-9]|[12][0-9]|3[01])\d{4}$/;
 
-This document describes the best practices and specific implementations we have integrated into our Java web application—including JSPs and Servlets—to prevent Cross-Site Scripting (XSS) vulnerabilities. Our aim is to safeguard user data and maintain the integrity of our application by applying a layered security strategy.
+      if (!dateRegex.test(dateField)) {
+        alert("Invalid date format. Please enter date as MMDDYYYY.");
+        return false;
+      }
 
-2. Security Strategy Overview
+      const month = parseInt(dateField.substring(0, 2), 10);
+      const day = parseInt(dateField.substring(2, 4), 10);
+      const year = parseInt(dateField.substring(4, 8), 10);
 
-Our defense-in-depth strategy against XSS attacks involves the following core elements:
+      const date = new Date(year, month - 1, day);
+      if (
+        date.getFullYear() !== year ||
+        date.getMonth() + 1 !== month ||
+        date.getDate() !== day
+      ) {
+        alert("Invalid date. Please enter a real calendar date.");
+        return false;
+      }
 
-Input Validation and Sanitization:
-Ensuring that all user-supplied data is rigorously checked against strict criteria and cleansed before processing.
-Output Encoding:
-Encoding all dynamic content based on its context (HTML, JavaScript, or URL) to ensure that browsers render data as text, not executable code.
-HTTP Security Headers:
-Configuring headers (such as Content-Security-Policy and X-XSS-Protection) to further restrict unwanted script execution.
-Frameworks and Libraries:
-Leveraging the inherent security features of modern frameworks and integrating specialized libraries (e.g., OWASP ESAPI) to manage encoding and sanitization tasks.
-Regular Testing and Audits:
-Continuously assessing our application through automated scanning and manual code reviews to identify and remediate any vulnerabilities.
-3. Input Handling
-
-3.1. Validation
-Whitelisting Inputs:
-We enforce strict validation rules on all inputs. For example, fields like email addresses are validated against a regular expression pattern that allows only acceptable characters.
-Length Restrictions:
-Input lengths are restricted to prevent buffer overflow or injection of unusually long strings.
-Framework Integration:
-We use Java Bean Validation (JSR 380) annotations to ensure inputs conform to our defined constraints. For example:
-public class UserInput {
-    @NotNull
-    @Email
-    @Size(max = 100)
-    private String email;
-
-    // Getters and setters...
-}
-3.2. Sanitization
-Special Character Filtering:
-Our application uses libraries such as OWASP ESAPI to sanitize inputs that might include characters dangerous for XSS. The sanitization routines are context-aware—for instance, filtering inputs used in URL parameters differently from those embedded in HTML.
-4. Output Encoding
-
-4.1. Context-Aware Encoding
-HTML Encoding in JSPs:
-We use JSTL functions to escape dynamic content. For example, in our JSP views:
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<h1>Welcome, ${fn:escapeXml(user.name)}</h1>
-JavaScript and URL Encoding:
-When output is inserted into JavaScript blocks or URL parameters, our utility methods (or libraries such as ESAPI) ensure proper encoding. For example:
-// Using ESAPI for JavaScript encoding
-String safeValue = ESAPI.encoder().encodeForJavaScript(userInputValue);
-5. HTTP Security Headers
-
-5.1. Content Security Policy (CSP)
-We have configured our web server to include a strict Content-Security-Policy header that restricts script sources:
-
-Content-Security-Policy: default-src 'self'; script-src 'self' https://trusted.cdn.com;
-This policy ensures that only scripts from our own domain or trusted sources are executed, thereby reducing the impact of any injected script.
-
-5.2. X-XSS-Protection Header
-Our application also sends the following header to enable the browser’s built-in XSS filter:
-
-X-XSS-Protection: 1; mode=block
-6. Secure Cookie Practices
-
-To further reduce XSS risks related to session hijacking, all session cookies are set with the following attributes:
-
-HttpOnly: Prevents client-side scripts from accessing the cookie.
-Secure: Ensures cookies are only transmitted over HTTPS.
-For example, in our Servlet code:
-
-Cookie sessionCookie = new Cookie("SESSIONID", sessionId);
-sessionCookie.setHttpOnly(true);
-sessionCookie.setSecure(true);
-response.addCookie(sessionCookie);
-7. Frameworks and Libraries
-
-Our application leverages modern frameworks and libraries that incorporate XSS prevention by default:
-
-Spring MVC & Thymeleaf:
-Thymeleaf automatically escapes variables bound in templates unless explicitly marked otherwise.
-OWASP ESAPI:
-We use ESAPI methods for encoding outputs across different contexts (HTML, JavaScript, URL).
-JSTL (for JSP):
-JSTL’s built-in functions (like fn:escapeXml) ensure that data bound in JSP pages is safely rendered.
-8. Testing and Auditing
-
-8.1. Automated Scanning
-OWASP ZAP and Burp Suite:
-Our continuous integration pipeline includes security scans using OWASP ZAP to check for XSS vulnerabilities and other common security issues.
-8.2. Manual Code Reviews
-Peer Reviews:
-Code reviews focus on security-critical areas, particularly those handling user inputs and dynamic content generation.
-Penetration Testing:
-Regular penetration tests ensure that our application defenses remain effective against emerging attack vectors.
-9. Conclusion
-
-By integrating multiple layers of security—from robust input validation and context-aware output encoding to the use of secure HTTP headers and modern frameworks—we have built a comprehensive defense mechanism against XSS attacks. Our ongoing testing and auditing practices ensure that our application adapts to emerging threats and maintains a secure operating environment.
-
-This document serves as both a technical reference and a checklist for our development and security teams, guiding us in maintaining best practices in XSS prevention throughout the development lifecycle.
-
-For further details or to contribute improvements, please refer to our internal security guidelines or contact the security team.
-
-
+      alert("Valid date!");
+      return true;
+    }
+  </script>
+</body>
+</html>
